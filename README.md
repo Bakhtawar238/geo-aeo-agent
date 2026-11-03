@@ -1,50 +1,47 @@
-# Free GEO / AEO Website Readiness Agent
+# GEO / AEO Audit Studio — v2.0 (up to 300 pages)
 
-A beginner-friendly **free local website audit starter tool**. Give it a website URL, and it automatically plans a small crawl, checks public pages and SEO/AEO/GEO readiness signals, prioritizes recommendations, and produces downloadable reports. No paid AI API key needed.
+A **free, rules-based** website readiness auditing application with an evidence-first report. It does **not** measure citations/mentions in ChatGPT, Gemini, Perplexity, Google AI Overviews, actual indexing or rankings. There is no invented GEO score.
 
-## Quick setup (Windows / Mac)
+## Features
 
-1. Install **Python 3.10 or newer** from https://www.python.org/downloads/ . On Windows, select **Add Python to PATH** during setup.
-2. Extract the ZIP, open a terminal in the extracted `geo_aeo_free_agent` folder.
-3. Run:
+- Up to **300 fetched HTML/error pages** per audit, with accurate checked/attempted counts and progress.
+- Reads robots.txt and follows crawl-delay/request-rate, with respectful request pacing.
+- Discovers pages through same-host XML sitemap files (including sitemap indexes and compressed `.gz` files) plus internal links.
+- Records HTTP status, index directives, canonical tags, title, description, H1, question-style headings, HTML text length, JSON-LD syntax/types, author/date presence, internal/external link counts and missing `alt` *attributes*.
+- Identifies duplicate page titles and exact duplicate extracted text **within crawled pages only**.
+- Flags internal links to URLs that returned HTTP errors **if those URLs were crawled**.
+- Marks each finding as `Observed` or `Heuristic`, provides evidence and does not treat the absence of FAQ/schema/etc. as an automatic ranking error.
+- Filters findings and downloads JSON/CSV/Markdown reports.
 
-   ```bash
-   python -m pip install -r requirements.txt
-   python -m streamlit run app.py
-   ```
+## Update your already-hosted Streamlit app
 
-   If `python` does not work on Windows, try `py` instead.
-4. Open the local browser address shown by Streamlit (usually `http://localhost:8501`).
-5. Enter a public website URL; click **Run free audit**.
-6. Download your Markdown action plan, CSV recommendations, or JSON output.
+1. Open your existing GitHub repo: `https://github.com/bakhtawar238/geo-aeo-agent`.
+2. Extract `GEO_AEO_Agent_v2_300_pages.zip` on your computer.
+3. In the repository root, choose **Add file → Upload files**, select the four extracted files (not the ZIP), and commit. When GitHub accepts an upload with the same filenames, it replaces their contents. If the browser refuses replacement, open `https://github.dev/bakhtawar238/geo-aeo-agent` and replace each file using its editor instead; then commit your changes.
+4. Keep the `main` branch and entrypoint `app.py` unchanged.
+5. The connected Streamlit Community Cloud app updates when you commit. `requirements.txt` updates can trigger a dependency rebuild.
+6. Open your existing `*.streamlit.app` URL and select the new page limit (up to 300).
 
-## Optional: use from terminal
+Docs: https://docs.streamlit.io/deploy/streamlit-community-cloud/manage-your-app
+
+## Important limitations / safety
+
+- **300 is a cap**, not a guarantee. robots.txt restrictions, network errors, discovered URLs, large responses or resource limits can result in fewer pages. A 300-page crawl generates substantial traffic; use only with the owner's permission.
+- The crawl does not execute JavaScript. It sees raw fetched HTML, not full browser-rendered content.
+- A flag such as `noindex`, canonical to another URL, short article, or missing author may be **intentional**. Manual review is necessary.
+- Free Streamlit Community Cloud has usage/memory constraints. For production-scale automated crawling, use an authenticated job queue or an authorized crawler service.
+- For untrusted public users, **add authentication, rate limiting, outbound network filtering and DNS/IP pinning**. Hostname validation alone does not eliminate DNS-rebinding SSRF. Do not publish as a general-purpose anonymous URL scanner without further hardening.
+- The agent uses heuristic rules rather than live LLM evaluations or AI search visibility data. Real keyword volumes, traffic, citations and index status require separately authorized APIs/tools.
+- Sitemap discovery considers up to 30 files/3,000 URLs and the total HTML download budget is 120 MB.
+
+## Run locally (optional)
 
 ```bash
-python agent.py https://example.com --pages 10 --out my_audit
+pip install -r requirements.txt
+python -m streamlit run app.py
 ```
 
-This creates `my_audit.md`, `my_audit.json`, and `my_audit_findings.csv`.
+## Reference
 
-## What this checks
-
-- **AEO:** Question headings, direct-answer style, descriptive headings, accessible textual content.
-- **GEO:** Source references, author/date attribution signals, crawlability, clarity, useful internal navigation.
-- **Technical:** Page status, indexability directives, canonical, titles, JSON-LD presence, image alt coverage.
-- **Actions:** High/Medium/Low prioritized recommendations per page. Checks are heuristics, not a formal Google or Microsoft score.
-
-## Important limitations
-
-- **Not a live AI visibility tracker.** It cannot show whether ChatGPT, Google AI Overviews, or Copilot actually cites the website. For actual citation reporting where available, see **Bing Webmaster Tools > AI Performance** and the relevant Google Search Console reports.
-- No guarantee that changing any suggested signal will improve visibility, rankings or traffic.
-- It reads mainly HTML; it may miss content rendered entirely by JavaScript.
-- Content quality, medical factual accuracy, originality, and source trustworthiness require human review. Presence of `schema` or FAQs does **not** guarantee AI inclusion, and neither is a mandatory AI-specific requirement.
-- It respects `robots.txt`, stays on the exact hostname, limits fetched pages (max 25), and never edits a website.
-- The tool runs on your own computer and accesses the audited **public** website over the internet; do not use it for private admin panels.
-- No LLM is included in the free starter version. It is an autonomous **rules-based agent/workflow**, not a generative AI model. A locally hosted LLM (e.g. Ollama) could be integrated as a future enhancement.
-
-## Official reading
-
-- Google Search Central, AI features and your site: https://developers.google.com/search/docs/appearance/ai-features
-- Google generative AI search guide: https://developers.google.com/search/docs/fundamentals/ai-optimization-guide
-- Bing AI Performance: https://www.bing.com/webmasters/help/ai-performance-9f8e7d6c
+- Google AI features: https://developers.google.com/search/docs/appearance/ai-features
+- Streamlit deployments: https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy
